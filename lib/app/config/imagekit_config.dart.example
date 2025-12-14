@@ -1,0 +1,17 @@
+/// ImageKit Configuration
+/// 
+/// Copy this file to imagekit_config.dart and replace with your actual values
+/// Get your credentials from: https://imagekit.io/dashboard/developer/api-keys
+class ImageKitConfig {
+  // Your ImageKit Public Key
+  static const String publicKey = 'YOUR_PUBLIC_KEY_HERE';
+  
+  // Your ImageKit URL Endpoint
+  static const String urlEndpoint = 'https://ik.imagekit.io/YOUR_ID_HERE';
+  
+  // Your ImageKit Private Key (keep this secure!)
+  static const String privateKey = 'YOUR_PRIVATE_KEY_HERE';
+  
+  // Authentication endpoint (your backend)
+  static const String authenticationEndpoint = 'YOUR_BACKEND_URL/api/imagekit/auth';
+}

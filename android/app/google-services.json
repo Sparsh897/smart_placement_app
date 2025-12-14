@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "80887460930",
+    "project_id": "smartplacement-36b1b",
+    "storage_bucket": "smartplacement-36b1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80887460930:android:3bd339d664c4c2003169db",
+        "android_client_info": {
+          "package_name": "com.example.smart_placement_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80887460930-4ma27hhj121glmptga74kse3godn0mv0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZyN4Z9FQL0hXiMQpKKlfXPRpcfXgkhYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80887460930-4ma27hhj121glmptga74kse3godn0mv0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
