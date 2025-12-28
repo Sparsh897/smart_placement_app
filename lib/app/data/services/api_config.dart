@@ -1,6 +1,6 @@
 class ApiConfig {
   // Production backend URL
-  static const String baseUrl = 'https://smart-placement-backend.onrender.com';
+  static const String baseUrl = 'https://smart-placement-backend-pzf2.onrender.com';
   static const String apiVersion = '/api';
 
   
