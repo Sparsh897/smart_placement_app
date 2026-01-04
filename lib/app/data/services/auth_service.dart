@@ -37,6 +37,7 @@ class AuthService {
         accessToken: response.data!.tokens.accessToken,
         refreshToken: response.data!.tokens.refreshToken,
         userId: response.data!.user.id,
+        userType: 'user',
       );
       print('🔐 [AUTH_SERVICE] Tokens saved for user: ${response.data!.user.id}');
     } else {
@@ -68,6 +69,7 @@ class AuthService {
         accessToken: response.data!.tokens.accessToken,
         refreshToken: response.data!.tokens.refreshToken,
         userId: response.data!.user.id,
+        userType: 'user',
       );
       print('🔐 [AUTH_SERVICE] Tokens saved for user: ${response.data!.user.id}');
     } else {
@@ -107,6 +109,7 @@ class AuthService {
         accessToken: response.data!.tokens.accessToken,
         refreshToken: response.data!.tokens.refreshToken,
         userId: response.data!.user.id,
+        userType: 'user',
       );
       print('🔐 [AUTH_SERVICE] Tokens saved for Google user: ${response.data!.user.id}');
     } else {

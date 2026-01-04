@@ -94,6 +94,42 @@ class User {
       if (updatedAt != null) 'updatedAt': updatedAt!.toIso8601String(),
     };
   }
+
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? phone,
+    String? photoUrl,
+    Location? location,
+    Profile? profile,
+    Preferences? preferences,
+    List<WorkExperience>? workExperience,
+    List<Education>? education,
+    List<Skill>? skills,
+    List<Certification>? certifications,
+    String? loginType,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      photoUrl: photoUrl ?? this.photoUrl,
+      location: location ?? this.location,
+      profile: profile ?? this.profile,
+      preferences: preferences ?? this.preferences,
+      workExperience: workExperience ?? this.workExperience,
+      education: education ?? this.education,
+      skills: skills ?? this.skills,
+      certifications: certifications ?? this.certifications,
+      loginType: loginType ?? this.loginType,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 }
 
 class Location {
@@ -163,6 +199,26 @@ class Profile {
       if (visibility != null) 'visibility': visibility,
       if (resumeUrl != null) 'resumeUrl': resumeUrl,
     };
+  }
+
+  Profile copyWith({
+    String? educationLevel,
+    String? course,
+    String? specialization,
+    String? summary,
+    int? currentSalary,
+    bool? visibility,
+    String? resumeUrl,
+  }) {
+    return Profile(
+      educationLevel: educationLevel ?? this.educationLevel,
+      course: course ?? this.course,
+      specialization: specialization ?? this.specialization,
+      summary: summary ?? this.summary,
+      currentSalary: currentSalary ?? this.currentSalary,
+      visibility: visibility ?? this.visibility,
+      resumeUrl: resumeUrl ?? this.resumeUrl,
+    );
   }
 }
 

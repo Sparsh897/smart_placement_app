@@ -22,6 +22,20 @@ import '../modules/applied_jobs/bindings/applied_jobs_binding.dart';
 import '../modules/applied_jobs/views/applied_jobs_view.dart';
 import '../modules/job_application/bindings/job_application_binding.dart';
 import '../modules/job_application/views/job_application_view.dart';
+import '../modules/user_type_selection/bindings/user_type_selection_binding.dart';
+import '../modules/user_type_selection/views/user_type_selection_view.dart';
+import '../modules/company_auth/bindings/company_auth_binding.dart';
+import '../modules/company_auth/views/company_auth_view.dart';
+import '../modules/company_dashboard/bindings/company_dashboard_binding.dart';
+import '../modules/company_dashboard/views/company_dashboard_view.dart';
+import '../modules/company_create_job/bindings/company_create_job_binding.dart';
+import '../modules/company_create_job/views/company_create_job_view.dart';
+import '../modules/company_jobs/bindings/company_jobs_binding.dart';
+import '../modules/company_jobs/views/company_jobs_view.dart';
+import '../modules/company_profile/bindings/company_profile_binding.dart';
+import '../modules/company_profile/views/company_profile_view.dart';
+import '../modules/company_applications/bindings/company_applications_binding.dart';
+import '../modules/company_applications/views/company_applications_view.dart';
 
 part 'app_routes.dart';
 
@@ -35,8 +49,13 @@ class AppPages {
   static final routes = <GetPage<dynamic>>[
     GetPage(
       name: '/',
-      page: () => const WelcomeView(),
-      binding: WelcomeBinding(),
+      page: () => const UserTypeSelectionView(),
+      binding: UserTypeSelectionBinding(),
+    ),
+    GetPage(
+      name: Routes.userTypeSelection,
+      page: () => const UserTypeSelectionView(),
+      binding: UserTypeSelectionBinding(),
     ),
     GetPage(
       name: Routes.welcome,
@@ -113,6 +132,37 @@ class AppPages {
       name: Routes.profile,
       page: () => const ProfileView(),
       binding: AuthBinding(),
+    ),
+    // Company routes
+    GetPage(
+      name: Routes.companyAuth,
+      page: () => const CompanyAuthView(),
+      binding: CompanyAuthBinding(),
+    ),
+    GetPage(
+      name: Routes.companyDashboard,
+      page: () => const CompanyDashboardView(),
+      binding: CompanyDashboardBinding(),
+    ),
+    GetPage(
+      name: Routes.companyCreateJob,
+      page: () => const CompanyCreateJobView(),
+      binding: CompanyCreateJobBinding(),
+    ),
+    GetPage(
+      name: Routes.companyJobs,
+      page: () => const CompanyJobsView(),
+      binding: CompanyJobsBinding(),
+    ),
+    GetPage(
+      name: Routes.companyProfile,
+      page: () => const CompanyProfileView(),
+      binding: CompanyProfileBinding(),
+    ),
+    GetPage(
+      name: Routes.companyApplications,
+      page: () => const CompanyApplicationsView(),
+      binding: CompanyApplicationsBinding(),
     ),
   ];
 }

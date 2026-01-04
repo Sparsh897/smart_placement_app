@@ -6,6 +6,7 @@ import '../../../data/models/user_models.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/http_service.dart';
 import '../../../data/services/user_service.dart';
+import '../../../data/services/token_manager.dart';
 import '../../onboarding/controllers/onboarding_controller.dart';
 import '../../placement/controllers/placement_controller.dart';
 import '../../user/controllers/user_controller.dart';
@@ -45,6 +46,15 @@ class AuthController extends GetxController {
 
   void _checkLoginStatus() async {
     try {
+      // Check if this is a company session first
+      final isCompanyLoggedIn = await TokenManager.isCompanyLoggedIn();
+      if (isCompanyLoggedIn) {
+        print('🔐 [AUTH] Company session detected, skipping user auth check');
+        isLoggedIn.value = false;
+        currentUser.value = null;
+        return;
+      }
+      
       final isLoggedInStored = await AuthService.isLoggedIn();
       if (isLoggedInStored) {
         // Set logged in state immediately based on token existence

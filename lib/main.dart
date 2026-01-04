@@ -21,42 +21,40 @@ void main() async {
   await GetStorage.init();
   
   // Initialize controllers globally
-  final authController = Get.put(AuthController());
-  final onboardingController = Get.put(OnboardingController());
+  Get.put(AuthController());
+  Get.put(OnboardingController());
   Get.put(PlacementController());
   Get.put(UserController());
   
-  // NEW FLOW: Login first, then onboarding, then main navigation
-  String initialRoute;
-  
-  // Check if user is logged in by checking stored tokens
-  final isUserLoggedIn = await TokenManager.isLoggedIn();
-  
-  // If user is logged in, make sure AuthController loads user data immediately
-  if (isUserLoggedIn) {
-    print('🚀 [MAIN] User is logged in, loading user data from storage...');
-    // Force load user data from storage before app starts
-    await authController.loadUserFromStorage();
-    authController.isLoggedIn.value = true;
-    print('🚀 [MAIN] User data loaded: ${authController.currentUser.value?.name}');
-  } else {
-    print('🚀 [MAIN] User is not logged in');
-  }
-  
-  if (!isUserLoggedIn) {
-    // User not logged in - go to auth screen
-    initialRoute = Routes.auth;
-  } else {
-    // User is logged in - check onboarding status
-    final isOnboardingComplete = await onboardingController.checkOnboardingStatus();
-    if (!isOnboardingComplete) {
-      initialRoute = Routes.onboarding;
-    } else {
-      initialRoute = Routes.mainNavigation;
-    }
-  }
+  // Check for existing session and determine initial route
+  String initialRoute = await _determineInitialRoute();
   
   runApp(SmartPlacementApp(initialRoute: initialRoute));
+}
+
+Future<String> _determineInitialRoute() async {
+  // Check if user is logged in and what type
+  final isCompanyLoggedIn = await TokenManager.isCompanyLoggedIn();
+  final isUserLoggedIn = await TokenManager.isUserLoggedIn();
+  final accessToken = await TokenManager.getAccessToken();
+  final userType = await TokenManager.getUserType();
+  
+  print('🔍 [MAIN] Initial route determination:');
+  print('🔍 [MAIN] Access token exists: ${accessToken != null}');
+  print('🔍 [MAIN] User type: $userType');
+  print('🔍 [MAIN] Is company logged in: $isCompanyLoggedIn');
+  print('🔍 [MAIN] Is user logged in: $isUserLoggedIn');
+  
+  if (isCompanyLoggedIn) {
+    print('🔍 [MAIN] Routing to company dashboard');
+    return Routes.companyDashboard;
+  } else if (isUserLoggedIn) {
+    print('🔍 [MAIN] Routing to main navigation');
+    return Routes.mainNavigation;
+  } else {
+    print('🔍 [MAIN] Routing to user type selection');
+    return Routes.userTypeSelection;
+  }
 }
 
 class SmartPlacementApp extends StatelessWidget {

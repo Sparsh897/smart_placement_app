@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../data/models/job_models.dart';
 import '../../../data/models/user_models.dart';
 import '../../../data/services/job_service.dart';
+import '../../../data/services/resume_service.dart';
 
 import '../../auth/controllers/auth_controller.dart';
 import '../../user/controllers/user_controller.dart';
@@ -29,6 +30,9 @@ class JobApplicationController extends GetxController {
   
   // Application answers for questions
   final applicationAnswers = <String, dynamic>{}.obs;
+  
+  // Resume upload state
+  final isUploadingResume = false.obs;
   
   // Application steps
   final steps = [
@@ -266,10 +270,10 @@ class JobApplicationController extends GetxController {
     if (applicationAnswers['question_1'] == null || applicationAnswers['question_1'].toString().isEmpty) {
       missingFields.add('English proficiency');
     }
-    if (applicationAnswers['question_2'] == null || !(applicationAnswers['question_2'] is int) || applicationAnswers['question_2'] < 0) {
+    if (applicationAnswers['question_2'] == null || applicationAnswers['question_2'] is! int || applicationAnswers['question_2'] < 0) {
       missingFields.add('${job.domain} experience');
     }
-    if (applicationAnswers['question_3'] == null || !(applicationAnswers['question_3'] is int) || applicationAnswers['question_3'] < 0) {
+    if (applicationAnswers['question_3'] == null || applicationAnswers['question_3'] is! int || applicationAnswers['question_3'] < 0) {
       missingFields.add('Programming experience');
     }
     if (applicationAnswers['question_4'] == null || applicationAnswers['question_4'].toString().isEmpty) {
@@ -468,6 +472,63 @@ class JobApplicationController extends GetxController {
 
   // Progress calculation
   double get progress => (currentStep.value + 1) / steps.length;
+
+  // Resume upload functionality
+  Future<bool> uploadResume() async {
+    if (isUploadingResume.value) return false;
+    
+    isUploadingResume.value = true;
+    try {
+      String? resumeUrl = await ResumeService.uploadResume();
+      
+      if (resumeUrl != null) {
+        // Update resume data in job application
+        final user = currentUser.value;
+        if (user != null) {
+          resume.value = {
+            'fileName': '${user.name.replaceAll(' ', '_')}_resume.pdf',
+            'fileUrl': resumeUrl,
+          };
+        }
+        
+        // Update user data in AuthController and UserController
+        final authController = Get.find<AuthController>();
+        if (authController.currentUser.value != null) {
+          // Update the user's profile with new resume URL
+          final updatedUser = authController.currentUser.value!.copyWith(
+            profile: authController.currentUser.value!.profile?.copyWith(
+              resumeUrl: resumeUrl,
+            ) ?? Profile(resumeUrl: resumeUrl),
+          );
+          authController.currentUser.value = updatedUser;
+          currentUser.value = updatedUser;
+        }
+        
+        // Also update UserController if available
+        try {
+          final userController = Get.find<UserController>();
+          await userController.loadUserProfile();
+        } catch (e) {
+          // UserController might not be initialized, that's okay
+        }
+        
+        return true;
+      } else {
+        return false; // User cancelled
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Upload Failed',
+        'Failed to upload resume: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Get.theme.colorScheme.error,
+        colorText: Get.theme.colorScheme.onError,
+      );
+      return false;
+    } finally {
+      isUploadingResume.value = false;
+    }
+  }
 
   @override
   void onClose() {

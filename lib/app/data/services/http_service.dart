@@ -107,7 +107,9 @@ debugPrint("JWT TOKEN${token}");
       // Log response details
       print('📥 [API] POST Response:');
       print('   Status: ${response.statusCode}');
-      print('   Body: ${_truncateBody(response.body)}');
+      print('   Body: ${response.body}'); // Show full body for debugging
+      print('   Body Length: ${response.body.length}');
+      print('   Body isEmpty: ${response.body.isEmpty}');
 
       return _handleResponse<T>(response, fromJson);
     } catch (e) {
@@ -214,11 +216,81 @@ debugPrint("JWT TOKEN${token}");
     }
   }
 
+  static Future<ApiResponse<T>> patch<T>(
+    String endpoint, {
+    Map<String, dynamic>? body,
+    T Function(dynamic)? fromJson,
+    bool requiresAuth = false,
+  }) async {
+    try {
+      String? token;
+      if (requiresAuth) {
+        token = await TokenManager.getAccessToken();
+        if (token == null) {
+          print('❌ [API] PATCH $endpoint - No auth token available');
+          return ApiResponse<T>(
+            success: false,
+            error: ApiError(
+              code: 'UNAUTHORIZED',
+              message: 'Authentication required',
+            ),
+          );
+        }
+      }
+
+      final headers = ApiConfig.getHeaders(token: token);
+      final requestBody = body != null ? jsonEncode(body) : null;
+      final url = Uri.parse('${ApiConfig.baseUrl}$endpoint');
+
+      // Log request details
+      print('🚀 [API] PATCH Request:');
+      print('   URL: $url');
+      print('   Headers: ${_sanitizeHeaders(headers)}');
+      if (requestBody != null) {
+        print('   Body: ${_sanitizeBody(requestBody)}');
+      }
+
+      final response = await http.patch(
+        url,
+        headers: headers,
+        body: requestBody,
+      ).timeout(ApiConfig.receiveTimeout);
+
+      // Log response details
+      print('📥 [API] PATCH Response:');
+      print('   Status: ${response.statusCode}');
+      print('   Body: ${_truncateBody(response.body)}');
+
+      return _handleResponse<T>(response, fromJson);
+    } catch (e) {
+      print('💥 [API] PATCH Error for $endpoint: $e');
+      return _handleError<T>(e);
+    }
+  }
+
   static ApiResponse<T> _handleResponse<T>(
     http.Response response,
     T Function(dynamic)? fromJson,
   ) {
     try {
+      // Handle empty response body
+      if (response.body.isEmpty) {
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          return ApiResponse<T>(
+            success: true,
+            message: 'Request successful',
+          );
+        } else {
+          return ApiResponse<T>(
+            success: false,
+            error: ApiError(
+              code: 'HTTP_ERROR',
+              message: 'Request failed with status ${response.statusCode}',
+            ),
+          );
+        }
+      }
+
       final Map<String, dynamic> jsonData = jsonDecode(response.body);
       
       if (response.statusCode >= 200 && response.statusCode < 300) {
@@ -270,7 +342,7 @@ debugPrint("JWT TOKEN${token}");
     );
   }
 
-  static void handleApiError(ApiError error) {
+  static void handleApiError(ApiError error, {bool autoRedirect = true}) {
     // Check if context is available before showing snackbars
     if (Get.context == null) return;
     
@@ -324,9 +396,12 @@ debugPrint("JWT TOKEN${token}");
           backgroundColor: Get.theme.colorScheme.error,
           colorText: Get.theme.colorScheme.onError,
         );
-        // Clear tokens and redirect to login
-        TokenManager.clearTokens();
-        Get.offAllNamed('/auth');
+        // Only clear tokens and redirect if autoRedirect is true
+        if (autoRedirect) {
+          TokenManager.clearTokens();
+          // Navigate to user type selection instead of auth
+          Get.offAllNamed('/user-type-selection');
+        }
         break;
       case 'NETWORK_ERROR':
         Get.snackbar(
@@ -384,9 +459,11 @@ debugPrint("JWT TOKEN${token}");
   }
 
   static String _truncateBody(String body) {
-    if (body.length > 500) {
-      return '${body.substring(0, 500)}... [truncated]';
-    }
+    // Temporarily disable truncation to see full response
     return body;
+    // if (body.length > 500) {
+    //   return '${body.substring(0, 500)}... [truncated]';
+    // }
+    // return body;
   }
 }
